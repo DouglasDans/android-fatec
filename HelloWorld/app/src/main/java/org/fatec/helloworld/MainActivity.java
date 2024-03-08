@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
+        setContentView(R.layout.principal_layout);
+
         EditText edNome = findViewById(R.id.txtNome);
         EditText edEmail = findViewById(R.id.txtEmail);
         EditText edTelefone = findViewById(R.id.txtTelefone);
