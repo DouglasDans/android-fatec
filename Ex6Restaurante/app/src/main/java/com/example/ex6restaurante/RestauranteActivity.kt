@@ -1,6 +1,8 @@
 package com.example.ex6restaurante
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -10,7 +12,7 @@ import com.google.gson.Gson
 
 class RestauranteActivity : AppCompatActivity() {
 
-    val restaurantes = ArrayList<Restaurante>()
+    val listaRestaurantes = ArrayList<Restaurante>()
     val gson = Gson()
 
     override fun onCreate( bundle : Bundle?) {
@@ -28,61 +30,36 @@ class RestauranteActivity : AppCompatActivity() {
         val btnSalvar = findViewById<Button>(R.id.btnSalvar)
         val btnVerLista = findViewById<Button>(R.id.btnVerLista)
 
-//        val lstView = findViewById<ListView>(R.id.lstRestaurantes)
-
-        val itemsAdapter = ArrayAdapter<Restaurante>(this,
-            android.R.layout.simple_list_item_1, restaurantes);
-
-        lstView.adapter = itemsAdapter
-
-
         btnSalvar.setOnClickListener {
-            val r = Restaurante(0,
-                edtNome.text.toString(),
-                edtEndereco.text.toString(),
-                edtLatitude.text.toString().toDouble(),
-                edtLongitude.text.toString().toDouble(),
-                edtTipo.text.toString(),
-                0,
-                edtDescricao.text.toString()
-            )
-            restaurantes.add( r )
+
+            val nome = edtNome.text.toString()
+            val endereco = edtEndereco.text.toString()
+            val tipo = edtTipo.text.toString()
+            val classificacao = edtClassificacao.text.toString().toInt()
+            val latitude = edtLatitude.text.toString().toDouble()
+            val longitude = edtLongitude.text.toString().toDouble()
+            val descricao = edtDescricao.text.toString()
+
+            val restaurante = Restaurante(1, nome, endereco, latitude, longitude, tipo, classificacao, descricao)
+            listaRestaurantes.add( restaurante )
+
             salvarPrefs()
         }
-
         btnVerLista.setOnClickListener {
-            carregarPrefs()
-            itemsAdapter.clear()
-            itemsAdapter.addAll(restaurantes)
+            val intent = Intent(this, ListaRestauranteActivity::class.java)
+            startActivity(intent)
         }
-
-
-
-
-
     }
 
     fun salvarPrefs() {
-        val strRestaurantes = gson.toJson(restaurantes)
-        Log.i("RESTAURANTES", strRestaurantes)
+        val strRestaurantes = gson.toJson(listaRestaurantes)
         val sp = this.getSharedPreferences("RESTAURANTES", MODE_PRIVATE)
-//        val edit = sp.edit()
-//        edit.putString("LISTA_RESTAURANTES", strRestaurantes)
-//        edit.commit()
+
+        Log.i("RESTAURANTES", strRestaurantes)
+
         sp.edit().apply {
-            putString("LISTA_RESTAURANTES", strRestaurantes)
+            putString("LISTA", strRestaurantes)
             commit()
         }
     }
-
-    fun carregarPrefs() {
-        val sp = this.getSharedPreferences("RESTAURANTES", MODE_PRIVATE)
-        val strRestaurantes = sp.getString("LISTA_RESTAURANTES", "[]")
-        val lista = gson.fromJson(strRestaurantes, ArrayList<Restaurante>()::class.java)
-
-        restaurantes.clear()
-        restaurantes.addAll( lista )
-
-    }
-
 }
